@@ -8,7 +8,7 @@
       content="initial-scale=1,maximum-scale=1,user-scalable=no"
     />
     <title>
-      test
+      演示
     </title>
  
  
@@ -43,6 +43,7 @@
          if( window.location.hostname == "leikh.github.io" ){ 
             DATA_URL = "https://leikh.github.io/website0204/data";
          }
+         var GRAPHIC_LAYER = null;
 
          var activeWidget = null;
 
@@ -265,6 +266,73 @@
           view.ui.add("topbar", "top-right");
           view.ui.add(layerList, "top-right");
 
+          //添加轨迹播放
+          function addPeopleTrace(){ 
+            GRAPHIC_LAYER = new GraphicsLayer({title:"人员运动点"});
+            GRAPHIC_LAYER.visible = false;
+            scene.add(GRAPHIC_LAYER);
+            // London
+            var pointArry = [{ 
+              type: "point", // autocasts as new Point()
+              x: 104.165821,
+              y: 30.646586
+
+            },{ 
+              type: "point", // autocasts as new Point()
+              x: 104.166236,
+              y: 30.646477
+
+            },{ 
+              type: "point", // autocasts as new Point()
+              x: 104.1668324,
+              y: 30.646323
+
+            },{ 
+              type: "point", // autocasts as new Point()
+              x: 104.167437,
+              y: 30.646222
+
+            }];
+
+
+            var point = pointArry[0];
+
+            var markerSymbol = {
+              type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+              color: [255, 0, 0],
+              outline: {
+                // autocasts as new SimpleLineSymbol()
+                color: [255, 255, 255],
+                width: 2
+              }
+            };
+            pointGraphic = new Graphic({
+              geometry: point,
+              symbol: markerSymbol,
+              attributes: { 
+                "name":"李明",
+                "age":"23",
+                "status":"正常"
+              },
+              popupTemplate:{ 
+                "title":"人员情况",
+                "content":"姓名：李明"
+              }
+            });
+            GRAPHIC_LAYER.add( pointGraphic );
+            var pointIndex = 0;
+            setInterval(function(){ 
+              if( pointIndex == 3){ 
+                pointIndex = 0;
+              }else{ 
+                pointIndex ++
+              }
+              //console.log("pnt-index:",pointIndex);
+              pointGraphic.geometry = pointArry[pointIndex];
+            }, 2000);
+
+          }
+
 //定位到slide---------------------------------------------------------
 var _getSlide = function(title){ 
   var _slide;
@@ -276,16 +344,24 @@ var _getSlide = function(title){
 };
 
 document.getElementById("people1").addEventListener("click", function(){
-    _getSlide("管廊前端").applyTo(view)
+    _getSlide("管廊后端").applyTo(view)
 });
 document.getElementById("people2").addEventListener("click", function(){
-    _getSlide("管廊后端").applyTo(view)
+    _getSlide("管廊前端").applyTo(view)
 });
 document.getElementById("camera1").addEventListener("click", function(){
-    _getSlide("管廊后端").applyTo(view)
+    _getSlide("管廊前端").applyTo(view)
 });
 document.getElementById("camera2").addEventListener("click", function(){
     _getSlide("管廊内部").applyTo(view)
+});
+document.getElementById("warning1").addEventListener("click", function(){
+    _getSlide("报警").applyTo(view)
+});
+document.getElementById("trace1").addEventListener("click", function(){
+    _getSlide("轨迹").applyTo(view);
+    //切换显示、隐藏
+    GRAPHIC_LAYER.visible = GRAPHIC_LAYER.visible? false : true;
 });
 
 
@@ -412,6 +488,11 @@ document.getElementById("camera2").addEventListener("click", function(){
               
 
           }, 4000); 
+          
+          //添加轨迹播放
+          addPeopleTrace();
+          //显示左侧面板
+          document.getElementById("myPanelDiv").style.visibility="visible";
 
 //---------------------------------------------------------------------
 
@@ -494,12 +575,16 @@ document.getElementById("camera2").addEventListener("click", function(){
         color: #e4e4e4;
       }
       #myPanelDiv{ 
+        top: 0px;
+        position: absolute;
+        left: 50px;
+        visibility: hidden;
       }
       #myPanelDiv ul{ 
         list-style: none;
         margin: 10px;
         padding: 0px;
-        width: 200px;
+        width: 250px;
       }
       #myPanelDiv ul li{ 
         border-bottom: 1px solid #333;
@@ -550,6 +635,16 @@ document.getElementById("camera2").addEventListener("click", function(){
         <li><b>摄像头列表</b></li>
         <li id="camera1" class="item">摄像头1 &nbsp;&nbsp;&nbsp;&nbsp; 品牌：华为</li>
         <li id="camera2" class="item">摄像头2 &nbsp;&nbsp;&nbsp;&nbsp; 品牌：华为</li>
+      </ul>
+      <ul>
+        <li><b>报警列表</b></li>
+        <li id="warning1" class="item">类型：烟雾&nbsp;&nbsp;&nbsp;&nbsp;时间：02/05 16:20</li>
+        <li id="warning2" class="item">类型：闯入&nbsp;&nbsp;&nbsp;&nbsp;时间：02/05 13:20 </li>
+      </ul>
+      <ul>
+        <li><b>轨迹列表</b></li>
+        <li title="点击此行切换运动点的显示与隐藏" id="trace1" class="item">人员：李明&nbsp;&nbsp;&nbsp;&nbsp; 时间：02/05 15:23</li>
+        <li id="trace2" class="item">人员：张光&nbsp;&nbsp;&nbsp;&nbsp; 时间：02/05 13:23</li>
       </ul>
     </div>
   </body>
